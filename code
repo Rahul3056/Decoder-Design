@@ -1,0 +1,51 @@
+### Example Verilog Code for 2-to-4 and 3-to-8 Decoders  
+
+```verilog
+// 2-to-4 Decoder Module
+module decoder_2to4 (
+    input wire [1:0] A,
+    output wire [3:0] Y
+);
+    assign Y[0] = ~A[1] & ~A[0];
+    assign Y[1] = ~A[1] & A[0];
+    assign Y[2] = A[1] & ~A[0];
+    assign Y[3] = A[1] & A[0];
+endmodule
+
+// 3-to-8 Decoder Module
+module decoder_3to8 (
+    input wire [2:0] A,
+    output wire [7:0] Y
+);
+    assign Y[0] = ~A[2] & ~A[1] & ~A[0];
+    assign Y[1] = ~A[2] & ~A[1] & A[0];
+    assign Y[2] = ~A[2] & A[1] & ~A[0];
+    assign Y[3] = ~A[2] & A[1] & A[0];
+    assign Y[4] = A[2] & ~A[1] & ~A[0];
+    assign Y[5] = A[2] & ~A[1] & A[0];
+    assign Y[6] = A[2] & A[1] & ~A[0];
+    assign Y[7] = A[2] & A[1] & A[0];
+endmodule
+
+// Testbench
+module testbench;
+    reg [1:0] A2;
+    reg [2:0] A3;
+    wire [3:0] Y2;
+    wire [7:0] Y3;
+
+    decoder_2to4 dec2 (.A(A2), .Y(Y2));
+    decoder_3to8 dec3 (.A(A3), .Y(Y3));
+
+    initial begin
+        $monitor("2-to-4: A=%b | Y=%b || 3-to-8: A=%b | Y=%b", A2, Y2, A3, Y3);
+        
+        A2 = 2'b00; A3 = 3'b000; #10;
+        A2 = 2'b01; A3 = 3'b001; #10;
+        A2 = 2'b10; A3 = 3'b100; #10;
+        A2 = 2'b11; A3 = 3'b111; #10;
+
+        $finish;
+    end
+endmodule
+```
