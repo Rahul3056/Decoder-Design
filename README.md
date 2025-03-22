@@ -1,134 +1,70 @@
- Decoder Design 
+### Decoder (2-to-4 and 3-to-8) - Theory, Design & Implementation  
 
-## **1. Theory & Explanation**  
-A **decoder** is a combinational logic circuit that converts **n-bit binary input** into **one of 2ⁿ unique outputs**. It is commonly used for:  
-- **Address Decoding** (activating memory locations based on address lines).  
-- **Instruction Decoding** (CPU interprets machine instructions).  
-- **Multiplexers & Demultiplexers** (used as selection circuits).  
+### Concept Overview  
+A **Decoder** is a combinational circuit that converts `n` input lines into `2^n` output lines. Decoders are widely used in memory addressing, demultiplexers, and instruction decoding in CPUs.
 
-### **Types of Decoders**  
-1. **2-to-4 Decoder** → 2-bit input → 4 unique outputs.  
-2. **3-to-8 Decoder** → 3-bit input → 8 unique outputs.  
-3. **4-to-16 Decoder** → 4-bit input → 16 unique outputs.  
+### Detailed Explanation  
 
----
+#### ✅ 2-to-4 Decoder  
+- **Definition:** A 2-to-4 decoder has 2 input lines (`A1`, `A0`) and 4 output lines (`Y0` to `Y3`). It activates exactly one output for each input combination.  
+- **Boolean Expressions:**  
+  - `Y0 = A1' A0'`  
+  - `Y1 = A1' A0`  
+  - `Y2 = A1 A0'`  
+  - `Y3 = A1 A0`  
 
-## **2. Truth Table (2-to-4 Decoder)**  
+- **Truth Table:**  
 
-| A1 | A0 | Y3 | Y2 | Y1 | Y0 |  
-|----|----|----|----|----|----|  
-| 0  | 0  | 0  | 0  | 0  | 1  |  
-| 0  | 1  | 0  | 0  | 1  | 0  |  
-| 1  | 0  | 0  | 1  | 0  | 0  |  
-| 1  | 1  | 1  | 0  | 0  | 0  |  
+| A1 | A0 | Y3 | Y2 | Y1 | Y0 |
+|:--:|:--:|:--:|:--:|:--:|:--:|
+|  0 |  0 |  0 |  0 |  0 |  1 |
+|  0 |  1 |  0 |  0 |  1 |  0 |
+|  1 |  0 |  0 |  1 |  0 |  0 |
+|  1 |  1 |  1 |  0 |  0 |  0 |
 
----
+**Example Application:** Used in **memory selection** to enable one memory block at a time.
 
-## **3. Boolean Expressions**  
 
-For a **2-to-4 decoder**, the output expressions are:  
+#### ✅ 3-to-8 Decoder  
+- **Definition:** A 3-to-8 decoder has 3 input lines (`A2`, `A1`, `A0`) and 8 output lines (`Y0` to `Y7`).  
+- **Boolean Expressions:**  
+  - `Y0 = A2' A1' A0'`  
+  - `Y1 = A2' A1' A0`  
+  - `Y2 = A2' A1 A0'`  
+  - `Y3 = A2' A1 A0`  
+  - `Y4 = A2 A1' A0'`  
+  - `Y5 = A2 A1' A0`  
+  - `Y6 = A2 A1 A0'`  
+  - `Y7 = A2 A1 A0`  
 
-\[
-Y_0 = \overline{A_1} \cdot \overline{A_0}
-\]
+- **Truth Table:**  
 
-\[
-Y_1 = \overline{A_1} \cdot A_0
-\]
+| A2 | A1 | A0 | Y7 | Y6 | Y5 | Y4 | Y3 | Y2 | Y1 | Y0 |
+|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+|  0 |  0 |  0 |  0 |  0 |  0 |  0 |  0 |  0 |  0 |  1 |
+|  0 |  0 |  1 |  0 |  0 |  0 |  0 |  0 |  0 |  1 |  0 |
+|  0 |  1 |  0 |  0 |  0 |  0 |  0 |  0 |  1 |  0 |  0 |
+|  0 |  1 |  1 |  0 |  0 |  0 |  0 |  1 |  0 |  0 |  0 |
+|  1 |  0 |  0 |  0 |  0 |  0 |  1 |  0 |  0 |  0 |  0 |
+|  1 |  0 |  1 |  0 |  0 |  1 |  0 |  0 |  0 |  0 |  0 |
+|  1 |  1 |  0 |  0 |  1 |  0 |  0 |  0 |  0 |  0 |  0 |
+|  1 |  1 |  1 |  1 |  0 |  0 |  0 |  0 |  0 |  0 |  0 |
 
-\[
-Y_2 = A_1 \cdot \overline{A_0}
-\]
+**Example Application:** Used in **instruction decoding** inside microprocessors.
 
-\[
-Y_3 = A_1 \cdot A_0
-\]
-
----
-
-## **4. K-map Reduction (Optional for Larger Decoders)**  
-For a **3-to-8 decoder**, K-map can simplify logic expressions for each output.
-
----
-
-## **5. Verilog Code (2-to-4 Decoder)**  
-
-```verilog
-module decoder_2to4(
-    input [1:0] A,
-    input EN,
-    output reg [3:0] Y
-);
-    always @(*) begin
-        if (EN)
-            case (A)
-                2'b00: Y = 4'b0001;
-                2'b01: Y = 4'b0010;
-                2'b10: Y = 4'b0100;
-                2'b11: Y = 4'b1000;
-                default: Y = 4'b0000;
-            endcase
-        else
-            Y = 4'b0000;
-    end
-endmodule
-```
+### Code Explanation  
+- **`assign` Statements:** Implements the logic equations for the decoder outputs.  
+- **`$monitor` Task:** Displays real-time changes in decoder inputs and outputs.  
+- **Test Cases:** Verifies both 2-to-4 and 3-to-8 decoders for all possible input combinations.  
 
 ---
 
-## **6. Testbench for Verification**  
-
-```verilog
-module tb_decoder_2to4();
-    reg [1:0] A;
-    reg EN;
-    wire [3:0] Y;
-
-    decoder_2to4 uut (.A(A), .EN(EN), .Y(Y));
-
-    initial begin
-        $monitor("A=%b, EN=%b -> Y=%b", A, EN, Y);
-        
-        EN = 1; A = 2'b00; #10;
-        A = 2'b01; #10;
-        A = 2'b10; #10;
-        A = 2'b11; #10;
-        
-        EN = 0; A = 2'b10; #10;
-
-        $finish;
-    end
-endmodule
-```
+### Execution Steps  
+1. Copy the Verilog code into your simulator (e.g., **ModelSim, Xilinx Vivado**).  
+2. Compile and run the code.  
+3. Verify that the outputs match the expected **truth table values**.  
 
 ---
 
-## **7. SystemVerilog Assertions (SVA) & Coverage**  
-
-### **Assertions for Checking Output Uniqueness**  
-```systemverilog
-property unique_output;
-    @(posedge clk) (EN) |-> (Y inside {4'b0001, 4'b0010, 4'b0100, 4'b1000});
-endproperty
-assert property (unique_output);
-```
-
-### **Functional Coverage Example**  
-```systemverilog
-covergroup cg_decoder;
-    option.per_instance = 1;
-    A_cp: coverpoint A { bins all_vals[] = {[0:3]}; }
-    EN_cp: coverpoint EN;
-    cross A_cp, EN_cp;
-endgroup
-```
-
----
-
-## **8. Practical Application Example**  
-A **decoder is essential** in digital electronics. Some real-world applications include:  
-- **CPU Instruction Decoders:** Converting binary opcodes into specific control signals.  
-- **Memory Selection:** Selecting one out of many memory blocks based on an address.  
-- **Seven-Segment Displays:** Decoders convert binary inputs to segment control signals for display output.  
-
----
+### Real-World Example for Practice  
+- **Design a 4-to-16 Decoder** using two 3-to-8 decoders and an enable signal.  
